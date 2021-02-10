@@ -1,4 +1,4 @@
-# Octo Template
+# muunilinst-igbc
 
 ![GitHub language count](https://img.shields.io/github/languages/count/Brunopaes/octo-template.svg)
 ![GitHub top language](https://img.shields.io/github/languages/top/Brunopaes/octo-template.svg)
@@ -7,7 +7,10 @@
 
 <small>_Optimized for python 3.6+_</small>
 
-This is a project template. Used in other repositories.
+The Intergalactic Banking Clan (IGBC), also known simply as the Galactic 
+Banking Clan or as the Banking Clan, was one of the most influential commerce 
+guilds during the waning days of the Galactic Republic and the most important
+ organization in the Outer Rim
 
 ----------------------
 
