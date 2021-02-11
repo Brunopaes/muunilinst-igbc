@@ -51,7 +51,13 @@ for value in values:
         value[0], value[1], value[2], value[3]
     ))][0].values()[1])
 
+result = []
 for i in query_result:
-    print(((query_result[0] / i) - 1) * 100)
-    print(query_result[0], i)
-    print('--------')
+    result.append(((query_result[0] / i) - 1) * 100)
+
+
+print("1 hora: {:.2f}\n5 horas: {:.2f}\n12 horas: {:.2f}".format(
+    result[1],
+    result[2],
+    result[3],
+))
