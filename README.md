@@ -1,4 +1,4 @@
-# muunilinst-igbc
+# Muunilinst: Intergalactic Banking Clan
 
 ![GitHub language count](https://img.shields.io/github/languages/count/Brunopaes/octo-template.svg)
 ![GitHub top language](https://img.shields.io/github/languages/top/Brunopaes/octo-template.svg)
