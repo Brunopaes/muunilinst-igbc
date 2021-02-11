@@ -1,24 +1,21 @@
 # -*- coding: utf-8 -*-
-import helpers
 import datetime
+import helpers
 
 
 now = datetime.datetime.now()
-one_hour = now - datetime.timedelta(hours=1)
-five_hour = now - datetime.timedelta(hours=5)
-ten_hour = now - datetime.timedelta(hours=12)
+date_times = [now]
+for date_time in (1, 5, 12):
+    date_times.append(now - datetime.timedelta(hours=date_time))
 
-dict_ = {
-    'year': [],
-    'month': [],
-    'day': [],
-    'hour': []
-}
-
-year = now.year
-month = now.month
-day = now.day
-hour = now.hour
+values = []
+for date_time in date_times:
+    values.append([
+        date_time.year,
+        date_time.month,
+        date_time.day,
+        date_time.hour,
+    ])
 
 
 query = """
@@ -48,6 +45,13 @@ ORDER BY
 helpers.set_path()
 client = helpers.start_connection()
 
-query_result = [i for i in client.query(query.format(year, month, day, hour))]
+query_result = []
+for value in values:
+    query_result.append([i for i in client.query(query.format(
+        value[0], value[1], value[2], value[3]
+    ))][0].values()[1])
 
-now_value = query_result[0].values()[1]
+for i in query_result:
+    print(((query_result[0] / i) - 1) * 100)
+    print(query_result[0], i)
+    print('--------')
