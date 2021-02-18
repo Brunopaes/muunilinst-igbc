@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from google.cloud import bigquery
 
+import telebot
+import json
 import os
 
 
@@ -23,3 +25,11 @@ def start_connection():
 
     """
     return bigquery.Client()
+
+
+def courier(message):
+    bot = telebot.TeleBot(
+        json.loads(open('settings.json', 'r').read())['API_TOKEN']
+    )
+
+    bot.send_message(-555674635, message)
