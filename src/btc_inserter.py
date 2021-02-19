@@ -17,7 +17,7 @@ class BTCoin:
 
         self.query = """
             INSERT INTO
-                `mooncake-304003.DS_Bruno.btc-trader` 
+                `mooncake-304003.DS_Bruno.btc-historical` 
             VALUES
                 ("{}", {}, {}, CURRENT_DATETIME("America/Sao_Paulo"))
         """

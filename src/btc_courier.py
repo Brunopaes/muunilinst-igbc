@@ -23,7 +23,7 @@ class BTCourier:
                         EXTRACT(DAY FROM DATETIME) AS DAY,
                         EXTRACT(HOUR FROM DATETIME) AS HOUR,
                   FROM
-                    `mooncake-304003.DS_Bruno.btc-trader`)
+                    `mooncake-304003.DS_Bruno.btc-historical`)
                 WHERE
                   OPERATION = "buy"
                   AND YEAR = {}
@@ -46,7 +46,7 @@ class BTCourier:
                          EXTRACT(DAY FROM DATETIME) AS DAY,
                          EXTRACT(HOUR FROM DATETIME) AS HOUR,
                    FROM
-                     `mooncake-304003.DS_Bruno.btc-trader`)
+                     `mooncake-304003.DS_Bruno.btc-historical`)
                  WHERE
                    OPERATION = "sell"
                    AND YEAR = {}
