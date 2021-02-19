@@ -5,7 +5,7 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/Brunopaes/octo-template.svg)
 ![GitHub](https://img.shields.io/github/license/Brunopaes/octo-template.svg)
 
-<small>_Optimized for python 3.6+_</small>
+<small>_Optimized for python 3.8+_</small>
 
 The Intergalactic Banking Clan (IGBC), also known simply as the Galactic 
 Banking Clan or as the Banking Clan, was one of the most influential commerce 
