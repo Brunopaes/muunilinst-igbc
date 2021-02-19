@@ -1,6 +1,6 @@
 __all__ = [
     'btc_inserter',
-    'btc_messager',
+    'btc_courier',
     'helpers'
 ]
 

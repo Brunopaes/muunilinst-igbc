@@ -3,7 +3,7 @@ import datetime
 import helpers
 
 
-class BTCAdvisor:
+class BTCourier:
     def __init__(self):
         self.now = datetime.datetime.now()
         self.date_times = [self.now]
@@ -80,13 +80,27 @@ class BTCAdvisor:
 
         self.fill_date_times()
 
+    # Used in __init__
     def fill_date_times(self):
+        """This function calculates the datetime from 1, 5 and 12 hours ago.
+
+        Returns
+        -------
+
+        """
         for date_time in (1, 5, 12):
             self.date_times.append(
                 self.now - datetime.timedelta(hours=date_time)
             )
 
+    # Used in __call__
     def fill_values(self):
+        """This function updates a iterator with the date objects.
+
+        Returns
+        -------
+
+        """
         for date_time in self.date_times:
             self.values.append([
                 date_time.year,
@@ -95,7 +109,39 @@ class BTCAdvisor:
                 date_time.hour,
             ])
 
+    # Used in querying
+    @staticmethod
+    def calculus_methodology(query_result, result):
+        """This function calculates the hour 0 deviation.
+
+        Parameters
+        ----------
+        query_result : iterator
+            The queried results.
+        result : float
+            1, 5 or 12 hour-shifted price.
+
+        Returns
+        -------
+
+        """
+        return ((query_result[0] / result) - 1) * 100
+
+    # Used in __call__
     def querying(self, operation):
+        """This function queries into DL and calculates the hour 0 deviation.
+
+        Parameters
+        ----------
+        operation : str
+            Operation filter. buy or sell.
+
+        Returns
+        -------
+        result : iterator
+            Consolidated result's list.
+
+        """
         query_result = []
         for value in self.values:
             query_result.append([i for i in self.client.query(
@@ -104,18 +150,35 @@ class BTCAdvisor:
                 ))][0].values()[1])
 
         result = []
-        for i in query_result:
-            result.append(((query_result[0] / i) - 1) * 100)
+        for result in query_result:
+            result.append(self.calculus_methodology(query_result, result))
 
         return result
 
-    def checking_results(self, operation, operation_prices, value_min,
-                         value_max):
+    # Used in __call__
+    def checking_results(self, operation, operation_prices, bottom, top):
+        """This function checks query's result.
+
+        Parameters
+        ----------
+        operation : str
+            Operation. buy or sell.
+        operation_prices : iterator
+            Operation prices - 1, 5 and 12 hour variation values.
+        bottom : float
+            Minimum value to trigger.
+        top : float
+            Maximum value to trigger.
+
+        Returns
+        -------
+
+        """
         if operation == 'buy':
-            if any([(elem <= value_min) or (elem <= value_max)
+            if any([(elem <= bottom) or (elem <= top)
                     for elem in operation_prices]):
                 true_values = [i for i, x in enumerate(
-                    [(elem <= value_min) or (elem <= value_max)
+                    [(elem <= bottom) or (elem <= top)
                      for elem in operation_prices]) if x]
 
                 for true_value in true_values:
@@ -125,10 +188,10 @@ class BTCAdvisor:
                         operation_prices[true_value]
                     )
         elif operation == 'sell':
-            if any([(elem >= value_min) or (elem >= value_max)
+            if any([(elem >= bottom) or (elem >= top)
                     for elem in operation_prices]):
                 true_values = [i for i, x in enumerate(
-                    [(elem >= value_min) or (elem >= value_max)
+                    [(elem >= bottom) or (elem >= top)
                      for elem in operation_prices]) if x]
 
                 for true_value in true_values:
@@ -138,6 +201,7 @@ class BTCAdvisor:
                         operation_prices[true_value]
                     )
 
+    # Used in __call__
     def __call__(self, *args, **kwargs):
         helpers.set_path()
         self.client = helpers.start_connection()
@@ -156,4 +220,4 @@ class BTCAdvisor:
 
 
 if __name__ == '__main__':
-    BTCAdvisor().__call__()
+    BTCourier().__call__()

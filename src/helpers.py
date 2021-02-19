@@ -28,6 +28,17 @@ def start_connection():
 
 
 def courier(message):
+    """This function courier - through telegram bot - a message.
+
+    Parameters
+    ----------
+    message : str
+        To be couriered message.
+
+    Returns
+    -------
+
+    """
     bot = telebot.TeleBot(
         json.loads(open('settings.json', 'r').read())['API_TOKEN']
     )

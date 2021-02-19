@@ -61,19 +61,23 @@ Section aimed on clarifying some running issues.
 For running it, at the `~/src` directory just run:
 
 ```shell script
-python btc-inserter.py
+python btc_inserter.py
+python btc_courier.py
 ``` 
 
 or, if importing it as a module, just run:
 ````python
+from btc_courier import BTCourier
 from btc_inserter import BTCoin
 
 if __name__ == '__main__':
     BTCoin().__call__()
+    BTCourier().__call__()
 ````
 
 ### JSON structure
 
+#### GCP credentials
 ````json
 {
   "type": "sjdnjsnda",
@@ -91,6 +95,16 @@ if __name__ == '__main__':
 
 _obs: in order to run this application you must have a json file at 
 `~/src/gcp-credentials.json`. This json must follow the structure above._
+
+#### Telegram API TOKEN
+````json
+{
+  "API_TOKEN": "18232813:JSDB1283DNSA82EH281D1DH812DOI82"
+}
+````
+
+_obs: in order to run this application you must have a json file at 
+`~/src/settings.json`. This json must follow the structure above._
 
 ### database table schema
 
