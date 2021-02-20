@@ -281,7 +281,7 @@ class BTCourier:
         -------
 
         """
-        return ((result / query_result[0]) - 1) * 100
+        return ((query_result[0]) / result - 1) * 100
 
     # Used in __call__
     def __call__(self, *args, **kwargs):
