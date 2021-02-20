@@ -224,10 +224,10 @@ class BTCourier:
                 variation.append(self.calculus_methodology(
                     operation_prices, result_
                 ))
-            if any([(elem <= self.fees[0][0]) or (elem <= self.fees[0][1])
+            if any([(elem <= self.fees[1][0]) or (elem <= self.fees[1][1])
                     for elem in variation]):
                 true_values = [i for i, x in enumerate(
-                    [(elem <= self.fees[0][0]) or (elem <= self.fees[0][1])
+                    [(elem <= self.fees[1][0]) or (elem <= self.fees[1][1])
                      for elem in variation]) if x]
 
                 for true_value in true_values:
@@ -246,10 +246,10 @@ class BTCourier:
                     variation.append(self.calculus_methodology(
                         operation_prices, result_
                     ))
-                if any([(elem >= self.fees[1][0]) or (elem >= self.fees[1][1])
+                if any([(elem >= self.fees[0][0]) or (elem >= self.fees[0][1])
                         for elem in variation]):
                     true_values = [i for i, x in enumerate(
-                        [(elem >= self.fees[1][0]) or (elem >= self.fees[1][1])
+                        [(elem >= self.fees[0][0]) or (elem >= self.fees[0][1])
                          for elem in variation]) if x]
 
                     if len(true_values) > 0:
