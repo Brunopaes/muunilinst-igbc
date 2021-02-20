@@ -22,7 +22,7 @@ class BTCourier:
                         EXTRACT(DAY FROM DATETIME) AS DAY,
                         EXTRACT(HOUR FROM DATETIME) AS HOUR,
                   FROM
-                    `mooncake-304003.DS_Bruno.btc-historical`)
+                    `mooncake-304003.trading.btc-historical`)
                 WHERE
                   OPERATION = "buy"
                   AND YEAR = {}
@@ -45,7 +45,7 @@ class BTCourier:
                         EXTRACT(DAY FROM DATETIME) AS DAY,
                         EXTRACT(HOUR FROM DATETIME) AS HOUR,
                   FROM
-                    `mooncake-304003.DS_Bruno.btc-historical`)
+                    `mooncake-304003.trading.btc-historical`)
                 WHERE
                   OPERATION = "sell"
                   AND YEAR = {}
@@ -65,7 +65,7 @@ class BTCourier:
                         SELECT
                             MAX(DATETIME) AS DATETIME
                         FROM
-                            `mooncake-304003.DS_Bruno.btc-trade`
+                            `mooncake-304003.trading.btc-trade`
                         WHERE
                             USERNAME = "{}"
                     )
@@ -74,7 +74,7 @@ class BTCourier:
                 SELECT
                     *
                 FROM
-                    `mooncake-304003.DS_Bruno.btc-fees`
+                    `mooncake-304003.trading.btc-fees`
                 ORDER BY 
                     OPERATION DESC
             """
@@ -241,13 +241,18 @@ class BTCourier:
                 self.message += '\n'
         elif operation == 'sell':
             for user_bought_price, user in zip(self.bought_prices, self.users):
-                operation_prices[0] = user_bought_price
+                operation_prices[0] = (
+                    operation_prices[0]
+                    if operation_prices[0] != user_bought_price
+                    else user_bought_price
+                )
 
                 variation = []
                 for result_ in operation_prices:
                     variation.append(self.calculus_methodology(
                         operation_prices, result_
                     ))
+
                 if any([(elem >= self.fees[0][0]) or (elem >= self.fees[0][1])
                         for elem in variation]):
                     true_values = [i for i, x in enumerate(
