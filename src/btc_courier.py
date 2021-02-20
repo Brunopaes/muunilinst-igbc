@@ -59,7 +59,7 @@ class BTCourier:
                 SELECT 
                     *
                 FROM 
-                    `mooncake-304003.DS_Bruno.btc-trade`
+                    `mooncake-304003.trading.btc-trade`
                 WHERE 
                     DATETIME = (
                         SELECT

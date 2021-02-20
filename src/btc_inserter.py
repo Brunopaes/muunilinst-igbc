@@ -70,7 +70,7 @@ class BTCoin:
 
         """
         for i in range(0, 2):
-            self.client.queries(self.query.format(
+            self.client.query(self.query.format(
                 self.operation.get('operation')[i],
                 self.operation.get('price')[i],
                 self.operation.get('spread')[i])

@@ -1,3 +1,4 @@
 pyTelegramBotAPI>=3.7.2
 google.cloud>=0.34.0
 requests>=2.24.0
+tweepy>=3.10.0
