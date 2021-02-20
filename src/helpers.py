@@ -6,6 +6,28 @@ import json
 import os
 
 
+def read_json(path):
+    """This function opens a json file and parses it content into a python
+    dict.
+
+    Parameters
+    ----------
+    path : str
+        The json file path.
+
+    Returns
+    -------
+    json.load : dict
+        The json content parsed into a python dict.
+
+    """
+    try:
+        with open(path, 'r') as f:
+            return json.load(f)
+    except FileNotFoundError as e:
+        print(e.args[-1])
+
+
 def set_path():
     """This function sets settings.json in PATH.
 
@@ -27,20 +49,21 @@ def start_connection():
     return bigquery.Client()
 
 
-def courier(message):
+def courier(message, chat_id=-555674635):
     """This function courier - through telegram bot - a message.
 
     Parameters
     ----------
     message : str
         To be couriered message.
+    chat_id : int
+        To be messaged chat id.
 
     Returns
     -------
 
     """
-    bot = telebot.TeleBot(
-        json.loads(open('settings.json', 'r').read())['API_TOKEN']
+    telebot.TeleBot(**read_json('settings.json')).send_message(
+        chat_id, message
     )
 
-    bot.send_message(-555674635, message)
