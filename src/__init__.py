@@ -1,6 +1,6 @@
 __all__ = [
     'btc_inserter',
-    'btc_buy_courier.py',
+    'btc_courier',
     'helpers'
 ]
 
