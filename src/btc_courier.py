@@ -75,6 +75,8 @@ class BTCourier:
                     *
                 FROM
                     `mooncake-304003.DS_Bruno.btc-fees`
+                ORDER BY 
+                    OPERATION DESC
             """
         }
 
