@@ -29,13 +29,13 @@ def read_json(path):
 
 
 def set_path():
-    """This function sets settings.json in PATH.
+    """This function sets telegram_settings.json in PATH.
 
     Returns
     -------
 
     """
-    path = os.path.abspath('gcp-credentials.json')
+    path = os.path.abspath('settings/gcp_settings.json')
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path
 
 
@@ -63,6 +63,8 @@ def courier(message, chat_id=-555674635):
     -------
 
     """
-    telebot.TeleBot(**read_json('settings.json')).send_message(
-        chat_id, message
-    )
+    telebot.TeleBot(**read_json('settings/telegram_settings.json'))\
+        .send_message(chat_id, message)
+
+
+courier('aa', 144068478)

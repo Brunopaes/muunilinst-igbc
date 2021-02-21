@@ -24,7 +24,7 @@ class BTCourier:
                   FROM
                     `mooncake-304003.trading.btc-historical`)
                 WHERE
-                  OPERATION = "buy"
+                  OPERATION = "sell"
                   AND YEAR = {}
                   AND MONTH = {}
                   AND DAY = {}
@@ -47,7 +47,7 @@ class BTCourier:
                   FROM
                     `mooncake-304003.trading.btc-historical`)
                 WHERE
-                  OPERATION = "sell"
+                  OPERATION = "buy"
                   AND YEAR = {}
                   AND MONTH = {}
                   AND DAY = {}
