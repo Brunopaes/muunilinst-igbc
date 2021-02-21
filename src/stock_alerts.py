@@ -75,7 +75,7 @@ class PS5StockAlerts:
             Tweet url.
 
         """
-        if 'playstation 5 in stock now' in tweet.full_text.lower():
+        if 'in stock now' in tweet.full_text.lower():
             return 'https://twitter.com/twitter/statuses/{}'.format(tweet.id)
         if verbose:
             return 'Impossible, perhaps the archives are incomplete!'
