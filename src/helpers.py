@@ -66,4 +66,3 @@ def courier(message, chat_id=-555674635):
     telebot.TeleBot(**read_json('settings.json')).send_message(
         chat_id, message
     )
-
