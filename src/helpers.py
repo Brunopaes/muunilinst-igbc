@@ -65,6 +65,3 @@ def courier(message, chat_id=-555674635):
     """
     telebot.TeleBot(**read_json('settings/telegram_settings.json'))\
         .send_message(chat_id, message)
-
-
-courier('aa', 144068478)
