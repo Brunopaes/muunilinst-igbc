@@ -13,7 +13,29 @@ class PS5StockAlerts:
         self.limit = limit
         self.verbose = verbose
 
-        self.chat_list = [result[0] for result in self.querying()]
+        self.queries = {
+            'broadcast': """
+                SELECT
+                    DISTINCT(CHAT_ID)
+                FROM
+                    `mooncake-304003.misc.ps5-broadcast-list`
+            """,
+            'check_tweet': """
+                SELECT
+                    *
+                FROM
+                    `mooncake-304003.misc.processed-tweets`
+            """,
+            'insert_tweet': """
+                INSERT INTO
+                    `mooncake-304003.misc.processed-tweets`
+                VALUES
+                    ({})
+            """
+        }
+
+        self.chat_list = [result[0] for result in self.querying(
+            self.queries.get('broadcast'))]
 
     def authenticate(self):
         """This function authenticates into twitter.
@@ -31,15 +53,22 @@ class PS5StockAlerts:
 
     # Used in __init__
     @staticmethod
-    def querying():
-        helpers.set_path()
-        return helpers.start_connection().query("""
-            SELECT
-                DISTINCT(CHAT_ID)
-            FROM
-                `mooncake-304003.misc.ps5-stock`
+    def querying(query):
+        """This function queries into BQ.
 
-        """)
+        Parameters
+        ----------
+        query : str
+            Query-string.
+
+        Returns
+        -------
+        response : google.cloud.bigquery.job.query.QueryJob
+            Query response.
+
+        """
+        helpers.set_path()
+        return helpers.start_connection().query(query)
 
     # Used in __call__
     def retrieve_tweets(self):
@@ -57,9 +86,26 @@ class PS5StockAlerts:
             tweet_mode='extended'
         )[0]
 
+    # Used in seek_and_destroy
+    def will_run(self, tweet_id):
+        """This function checks if tweet was already processed.
+
+        Parameters
+        ----------
+        tweet_id : int
+            Tweet id.
+
+        Returns
+        -------
+
+        """
+        if tweet_id in [result[0] for result in self.querying(
+                self.queries.get('check_tweet'))]:
+            exit()
+        self.querying(self.queries.get('insert_tweet').format(tweet_id))
+
     # Used in __call__
-    @staticmethod
-    def seek_and_destroy(tweet, verbose):
+    def seek_and_destroy(self, tweet, verbose):
         """This function seeks for "Playstation 5 In Stock NOW"
 
         Parameters
@@ -76,6 +122,7 @@ class PS5StockAlerts:
 
         """
         if 'in stock now' in tweet.full_text.lower():
+            self.will_run(tweet.id)
             return 'https://twitter.com/twitter/statuses/{}'.format(tweet.id)
         if verbose:
             return 'Impossible, perhaps the archives are incomplete!'
