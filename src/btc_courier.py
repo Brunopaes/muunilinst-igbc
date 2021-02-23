@@ -55,7 +55,7 @@ class BTCourier:
                 ORDER BY
                   DATETIME DESC
             """,
-            'bought_price': """
+            'purchase_price': """
                 SELECT 
                     *
                 FROM 
@@ -89,9 +89,17 @@ class BTCourier:
         self.message = ''
 
         self.index = {
-            1: '1 hora',
-            2: '5 horas',
-            3: '12 horas',
+            'buy': {
+                1: '1 hora',
+                2: '5 horas',
+                3: '12 horas',
+            },
+            'sell': {
+                1: '0 horas',
+                2: '1 hora',
+                3: '5 horas',
+                4: '12 horas',
+            }
         }
 
         self.operation = {
@@ -104,7 +112,7 @@ class BTCourier:
             'Diego Tebet'
         )
 
-        self.bought_prices = self.querying_bought_price()
+        self.purchase_prices = self.querying_purchase_price()
 
     # Used in __init__
     def fill_date_times(self):
@@ -157,29 +165,30 @@ class BTCourier:
                 [i for i in self.client.query(self.queries.get('fees'))]]
 
     # Used in __init__
-    def querying_bought_price(self):
-        """This functions queries user bought price.
+    def querying_purchase_price(self):
+        """This functions queries user most recent purchase price.
 
         Returns
         -------
-        bought_prices : iterator
-            User bought prices.
+        purchase_prices : iterator
+            User most recent purchase price.
 
         """
-        bought_prices = []
+        purchase_prices = []
         for user in self.users:
             try:
-                bought_prices.append(
+                purchase_prices.append(
                     [i for i in self.client.query(self.queries.get(
-                        'bought_price').format(user))][0].values()[2]
+                        'purchase_price'
+                    ).format(user))][0].values()[2]
                 )
             except IndexError:
                 now = self.date_values[0]
-                bought_prices.append([i for i in self.client.query(
+                purchase_prices.append([i for i in self.client.query(
                     self.queries.get('sell').format(
                         now[0], now[1], now[2], now[3]))][0].values()[1]
-                )
-        return bought_prices
+                                       )
+        return purchase_prices
 
     # Used in __call__
     def querying(self, operation):
@@ -224,7 +233,7 @@ class BTCourier:
             variation = []
             for result_ in operation_prices:
                 variation.append(self.calculus_methodology(
-                    operation_prices, result_
+                    operation_prices, result_, operation
                 ))
 
             if any([(elem <= self.fees[1][0]) or (elem <= self.fees[1][1])
@@ -235,23 +244,33 @@ class BTCourier:
 
                 for true_value in true_values:
                     self.message += 'Variação em {} de {}: {:.2f}\n'.format(
-                        self.index.get(true_value),
+                        self.index.get('buy').get(true_value),
                         self.operation.get(operation),
                         variation[true_value]
                     )
                 self.message += '\n'
         elif operation == 'sell':
-            for user_bought_price, user in zip(self.bought_prices, self.users):
-                operation_prices[0] = (
+            operation_prices_reset = operation_prices.copy()
+            for user_purchase_price, user in \
+                    zip(self.purchase_prices, self.users):
+
+                operation = (
+                    'sell_purchased'
+                    if operation_prices[0] != user_purchase_price
+                    else 'sell'
+                )
+
+                operation_prices.insert(
+                    0,
                     operation_prices[0]
-                    if operation_prices[0] != user_bought_price
-                    else user_bought_price
+                    if operation_prices[0] == user_purchase_price
+                    else user_purchase_price
                 )
 
                 variation = []
                 for result_ in operation_prices:
                     variation.append(self.calculus_methodology(
-                        operation_prices, result_
+                        operation_prices, result_, operation
                     ))
 
                 if any([(elem >= self.fees[0][0]) or (elem >= self.fees[0][1])
@@ -265,15 +284,16 @@ class BTCourier:
 
                     for true_value in true_values:
                         self.message += 'Variação em {} de {}: {:.2f}\n'.format(
-                            self.index.get(true_value),
+                            self.index.get('sell').get(true_value),
                             self.operation.get(operation),
                             variation[true_value]
                         )
                     self.message += '\n'
+                operation_prices = operation_prices_reset
 
-    # Used in querying
+    # Used in checking_results
     @staticmethod
-    def calculus_methodology(query_result, result):
+    def calculus_methodology(query_result, result, operation):
         """This function calculates the hour 0 deviation.
 
         Parameters
@@ -282,12 +302,20 @@ class BTCourier:
             The queried results.
         result : float
             1, 5 or 12 hour-shifted price.
+        operation : str
+            Trade operation. buy or sell.
 
         Returns
         -------
+        variation : float
+            Float variation in buy/sell operations.
 
         """
-        return ((query_result[0]) / result - 1) * 100
+        return {
+            'buy': ((query_result[0]) / result - 1) * 100,
+            'sell': ((query_result[0]) / result - 1) * 100,
+            'sell_purchased': (result / (query_result[0]) - 1) * 100,
+        }.get(operation)
 
     # Used in __call__
     def __call__(self, *args, **kwargs):
@@ -296,7 +324,6 @@ class BTCourier:
             self.checking_results(
                 operation, self.querying(operation)
             )
-
             if self.message != '':
                 helpers.courier(self.message)
 
