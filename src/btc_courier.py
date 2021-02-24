@@ -110,7 +110,7 @@ class BTCourier:
 
         self.users = (
             'Bruno Paes',
-            'Diego Tebet'
+            'Diego None'
         )
 
         self.purchase_prices = self.querying_purchase_price()
