@@ -105,6 +105,7 @@ class BTCourier:
         self.operation = {
             'buy': 'Compra',
             'sell': 'Venda',
+            'sell_purchased': 'Venda'
         }
 
         self.users = (
