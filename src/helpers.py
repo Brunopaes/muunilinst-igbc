@@ -49,7 +49,7 @@ def start_connection():
     return bigquery.Client()
 
 
-def courier(message, chat_id=-555674635):
+def courier(message, chat_id=-1001164675059):
     """This function courier - through telegram bot - a message.
 
     Parameters
