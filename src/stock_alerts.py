@@ -4,7 +4,7 @@ import tweepy
 
 
 class PS5StockAlerts:
-    def __init__(self, user='PS5StockAlerts', limit=1, verbose=True):
+    def __init__(self, user='PS5StockAlerts', limit=5, verbose=True):
         self.credentials = helpers.read_json('settings/ps_settings.json')
 
         self.api = tweepy.API(self.authenticate())
@@ -84,7 +84,7 @@ class PS5StockAlerts:
             screen_name=self.user,
             count=self.limit,
             tweet_mode='extended'
-        )[0]
+        )
 
     # Used in seek_and_destroy
     def will_run(self, tweet_id):
@@ -105,13 +105,13 @@ class PS5StockAlerts:
         self.querying(self.queries.get('insert_tweet').format(tweet_id))
 
     # Used in __call__
-    def seek_and_destroy(self, tweet, verbose):
+    def seek_and_destroy(self, tweets, verbose):
         """This function seeks for "Playstation 5 In Stock NOW"
 
         Parameters
         ----------
-        tweet : tweepy.models.Status.
-            Latest tweet.
+        tweets : iterator.
+            Last 4 tweets.
         verbose : bool
             Not found verbose.
 
@@ -121,9 +121,10 @@ class PS5StockAlerts:
             Tweet url.
 
         """
-        if 'in stock now' in tweet.full_text.lower():
-            self.will_run(tweet.id)
-            return 'https://twitter.com/twitter/statuses/{}'.format(tweet.id)
+        for tweet in tweets:
+            if 'in stock now' in tweet.full_text.lower():
+                self.will_run(tweet.id)
+                return 'https://twitter.com/twitter/statuses/{}'.format(tweet.id)
         if verbose:
             return 'Impossible, perhaps the archives are incomplete!'
 
@@ -145,10 +146,13 @@ class PS5StockAlerts:
         """
         if url is not None:
             for chat in chat_list:
-                helpers.courier(
-                    url,
-                    chat
-                )
+                try:
+                    helpers.courier(
+                        url,
+                        chat
+                    )
+                except helpers.telebot.apihelper.ApiTelegramException as e:
+                    e.args
 
     def __call__(self, *args, **kwargs):
         self.telegram(self.seek_and_destroy(
