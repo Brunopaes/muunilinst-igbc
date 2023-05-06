@@ -1,11 +1,11 @@
 import os
 
-from handlers import analyst_endpoint
+from handlers import market_analyst_edp
 
 
 def main():
     """Exposes the application endpoints."""
-    analyst_endpoint.app.run()
+    market_analyst_edp.handler.run()
 
 
 if __name__ == '__main__':
