@@ -1,11 +1,11 @@
 import os
 
-from handlers import market_analyst_edp
+from handlers import market_analyst_edp, aggregator_edp
 
 
 def main():
     """Exposes the application endpoints."""
-    market_analyst_edp.handler.run()
+    aggregator_edp.handler.run()
 
 
 if __name__ == '__main__':
