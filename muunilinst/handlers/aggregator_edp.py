@@ -24,7 +24,7 @@ KEYS_ = [
 
 VALUES_ = ["report_value"]
 
-AGGREGATION_TYPE_ = "sum"
+AGGREGATION_TYPE_ = "min"
 
 
 @handler.route("/aggregate", methods=["GET", "POST"])

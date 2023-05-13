@@ -1,5 +1,8 @@
+"""Module for aggregating nested dictionaries. It can handle multiple
+aggregation functions (sum, min, max and arithmetic average)."""
+
 from collections import defaultdict
-from typing import Any, DefaultDict, Dict, List, Optional
+from typing import Any, DefaultDict, Dict, List, Optional, Tuple
 
 
 def aggregate(
@@ -8,8 +11,7 @@ def aggregate(
         values: List[str],
         aggregation_function: Optional[str] = "sum"
 ) -> List[Dict[str, Any]]:
-    """Aggregate entrypoint. It filters the payload by the given keys,
-    values and applies a given aggregation function.
+    """Aggregate entrypoint. It filters the payload by the given keys, values and applies a given aggregation function.
 
     Parameters
     ----------
@@ -31,10 +33,50 @@ def aggregate(
     aggregated_list : List[Dict[str, Any]]
         List of aggregated Dicts.
 
+    Examples
+    --------
+    >>> aggregate(
+    >>>     payload=[
+    >>>         {
+    >>>             "key": {"key_1": "aaa"},
+    >>>             "data": {"date": "2023-01-01", "value": 10}
+    >>>         },
+    >>>         {
+    >>>             "key": {"key_1": "aaa"},
+    >>>             "data": {"date": "2023-01-01", "value": 10}
+    >>>         },
+    >>>         {
+    >>>             "key": {"key_1": "bbb"},
+    >>>             "data": {"date": "2023-01-01", "value": 10}
+    >>>         },
+    >>>         {
+    >>>             "key": {"key_1": "bbb"},
+    >>>             "data": {"date": "2023-01-02", "value": 10}
+    >>>         },
+    >>>     ],
+    >>>     keys=[{"key": "key_1"}, {"data": "date"}],
+    >>>     values=["value"],
+    >>>     aggregation_function="sum"
+    >>> )
+    [
+        {
+            "key": {"key_1": "aaa"},
+            "data": {"date": "2023-01-01", "value": 20}
+        },
+        {
+            "key": {"key_1": "bbb"},
+            "data": {"date": "2023-01-01", "value": 10}
+        },
+        {
+            "key": {"key_1": "bbb"},
+            "data": {"date": "2023-01-02", "value": 10}
+        },
+    ]
+
     """
     return reducing_dimensionality(
-        filtering_keys(payload, keys, values),
-        aggregation_function
+        aggregated_map=filtering_keys(payload, keys, values),
+        aggregation_function=aggregation_function
     )
 
 
@@ -42,7 +84,7 @@ def filtering_keys(
         payload: List[Dict[str, Any]],
         keys: List[Dict[str, Any]],
         values: List[str],
-) -> DefaultDict[List, Dict]:
+) -> DefaultDict[Tuple[Tuple[str, str], Tuple[str, str]], Dict]:
     """Filters the payload dict by the given keys and values.
 
     Parameters
@@ -60,6 +102,28 @@ def filtering_keys(
     -------
     aggregated_map : DefaultDict[List, Dict]
         Mapping of keys to aggregate data objects.
+
+    Examples
+    --------
+    >>> filtering_keys(
+    >>>     payload=[{
+    >>>         "key": {"tech": "hydro", "region": "aaa"},
+    >>>         "data": {"reference_date": "2023-01-01", "report_value": 10}
+    >>>     }],
+    >>>     keys=[
+    >>>         {"key": "tech"},
+    >>>         {"key": "region"},
+    >>>         {"data": "reference_date"}
+    >>>     ],
+    >>>     values=["report_value"]
+    >>> )
+    defaultdict(dict, {
+        (('tech', 'hydro'), ('region', 'aaa')): defaultdict(dict, {
+            (('reference_date', '2023-01-01'),): defaultdict(list, {
+                'report_value': [10]
+            })
+        })
+    })
 
     """
     aggregated_map = defaultdict(
@@ -85,14 +149,14 @@ def filtering_keys(
 
 
 def reducing_dimensionality(
-        aggregated_map: DefaultDict[List, Dict],
+        aggregated_map: DefaultDict[Tuple[Tuple[str, str], Tuple[str, str]], Dict],
         aggregation_function: Optional[str] = "sum"
 ) -> List[Dict[str, Any]]:
     """Reduces dimensionality by aggregating data objects.
 
     Parameters
     ----------
-    aggregated_map : DefaultDict[filtering_keys, Dict]
+    aggregated_map : DefaultDict[Tuple[Tuple[str, str], Tuple[str, str]], Dict]
         Mapping of keys to aggregate data objects.
 
     aggregation_function : Optional[str]
@@ -103,6 +167,23 @@ def reducing_dimensionality(
     -------
     aggregated_list : List[Dict[str, Any]]
         List of aggregated Dicts.
+
+    Examples
+    --------
+    >>> reducing_dimensionality(
+    >>>     aggregated_map=defaultdict(dict, {
+    >>>         (('tech', 'hydro'), ('region', 'aaa')): defaultdict(dict, {
+    >>>             (('reference_date', '2023-01-01'),): defaultdict(list, {
+    >>>                 'report_value': [10, 20, 30]
+    >>>             })
+    >>>         })
+    >>>     }),
+    >>>     aggregation_function="min"
+    >>> )
+    [{
+        'key': {'tech': 'hydro', 'region': 'aaa'},
+        'data': {'reference_date': '2023-01-01', 'report_value': 10}
+    }]
 
     """
     aggregated_list = []
@@ -119,14 +200,14 @@ def reducing_dimensionality(
 
 
 def aggregation_functions(
-        value_map: DefaultDict[List, Dict],
+        value_map: DefaultDict[str, List],
         aggregation_function: Optional[str] = "sum"
 ) -> DefaultDict[Any, int]:
     """Selects and Applies the given aggregation function (the default).
 
     Parameters
     ----------
-    value_map : DefaultDict[List, Dict]
+    value_map : DefaultDict[str, List]
         List of to be aggregated values.
 
     aggregation_function : Optional[str]
@@ -135,6 +216,16 @@ def aggregation_functions(
 
     Returns
     -------
+    aggregated_dict : DefaultDict[Any, int]
+        Dictionary with aggregated values.
+
+    Examples
+    --------
+    >>> aggregation_functions(
+    >>>     value_map=defaultdict(list, {"reported_value": [10, 20, 30]}),
+    >>>     aggregation_function="min"
+    >>> )
+    defaultdict(int, {"reported_value": 10})
 
     """
     aggregated_dict = defaultdict(int)
@@ -149,7 +240,9 @@ def aggregation_functions(
     return aggregated_dict
 
 
-def arithmetic_average(values_list: List[Any]) -> float:
+def arithmetic_average(
+        values_list: List[Any]
+) -> float:
     """Applies arithmetic average in a list.
 
     Parameters
@@ -161,6 +254,14 @@ def arithmetic_average(values_list: List[Any]) -> float:
     -------
     arithmetic_average : float
         Calculated arithmetic average.
+
+    Examples
+    --------
+    >>> arithmetic_average([10, 10, 5, 5])
+    7.5
+
+    >>> arithmetic_average([10, 8])
+    9.0
 
     """
     return sum(values_list) / len(values_list)
