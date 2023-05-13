@@ -6,12 +6,13 @@ from typing import Any, DefaultDict, Dict, List, Optional, Tuple
 
 
 def aggregate(
-        payload: List[Dict[str, Any]],
-        keys: List[Dict[str, Any]],
-        values: List[str],
-        aggregation_function: Optional[str] = "sum"
+    payload: List[Dict[str, Any]],
+    keys: List[Dict[str, Any]],
+    values: List[str],
+    aggregation_function: Optional[str] = "sum",
 ) -> List[Dict[str, Any]]:
-    """Aggregate entrypoint. It filters the payload by the given keys, values and applies a given aggregation function.
+    """Aggregate entrypoint. It filters the payload by the given keys,
+    values and applies a given aggregation function.
 
     Parameters
     ----------
@@ -76,14 +77,14 @@ def aggregate(
     """
     return reducing_dimensionality(
         aggregated_map=filtering_keys(payload, keys, values),
-        aggregation_function=aggregation_function
+        aggregation_function=aggregation_function,
     )
 
 
 def filtering_keys(
-        payload: List[Dict[str, Any]],
-        keys: List[Dict[str, Any]],
-        values: List[str],
+    payload: List[Dict[str, Any]],
+    keys: List[Dict[str, Any]],
+    values: List[str],
 ) -> DefaultDict[Tuple[Tuple[str, str], Tuple[str, str]], Dict]:
     """Filters the payload dict by the given keys and values.
 
@@ -126,9 +127,8 @@ def filtering_keys(
     })
 
     """
-    aggregated_map = defaultdict(
-        lambda: defaultdict(lambda: defaultdict(list))
-    )
+    aggregated_map = \
+        defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
 
     for item in payload:
         key_values = tuple(
@@ -149,8 +149,8 @@ def filtering_keys(
 
 
 def reducing_dimensionality(
-        aggregated_map: DefaultDict[Tuple[Tuple[str, str], Tuple[str, str]], Dict],
-        aggregation_function: Optional[str] = "sum"
+    aggregated_map: DefaultDict[Tuple[Tuple[str, str], Tuple[str, str]], Dict],
+    aggregation_function: Optional[str] = "sum",
 ) -> List[Dict[str, Any]]:
     """Reduces dimensionality by aggregating data objects.
 
@@ -191,10 +191,13 @@ def reducing_dimensionality(
         for data_values, values_map in data_values_map.items():
             aggregated_list.append({
                 "key": dict(key_values),
-                "data": dict(data_values, **aggregation_functions(
-                    values_map, aggregation_function
-                ))
-            })
+                "data": dict(
+                    data_values,
+                    **aggregation_functions(
+                        values_map, aggregation_function
+                    )
+                )}
+            )
 
     return aggregated_list
 
@@ -234,15 +237,13 @@ def aggregation_functions(
             "sum": sum,
             "min": min,
             "max": max,
-            "avg": arithmetic_average
+            "avg": arithmetic_average,
         }.get(aggregation_function, sum)(value_list)
 
     return aggregated_dict
 
 
-def arithmetic_average(
-        values_list: List[Any]
-) -> float:
+def arithmetic_average(values_list: List[Any]) -> float:
     """Applies arithmetic average in a list.
 
     Parameters
