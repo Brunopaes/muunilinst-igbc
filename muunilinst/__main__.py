@@ -1,10 +1,9 @@
-from handlers import aggregator_edp, market_analyst_edp
+from handlers import app, aggregator_edp, market_analyst_edp  # noqa: F401
 
 
 def main():
     """Exposes the application endpoints."""
-    market_analyst_edp.handler.run()
-    aggregator_edp.handler.run()
+    app.handler.run(use_reloader=True)
 
 
 if __name__ == "__main__":

@@ -1,11 +1,9 @@
 import logging
 
-import flask
+from .app import handler
 from processors import market_analyst
 
 logger = logging.Logger("Market Analyst", level=logging.INFO)
-
-handler = flask.Flask(__name__)
 
 config = {"market-analyst": {"requests": {
     "url": "https://coinmarketcap.com/new/"
