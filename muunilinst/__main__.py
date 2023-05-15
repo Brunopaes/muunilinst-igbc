@@ -1,4 +1,4 @@
-from handlers import app, aggregator_edp, market_analyst_edp  # noqa: F401
+from handlers import app, aggregator_edp  # noqa: F401
 
 
 def main():

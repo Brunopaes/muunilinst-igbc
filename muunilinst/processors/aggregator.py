@@ -56,7 +56,7 @@ def aggregate(
     >>>         },
     >>>     ],
     >>>     keys=[{"key": "key_1"}, {"data": "date"}],
-    >>>     values=["value"],
+    >>>     values=["value", "value_2"],
     >>>     aggregation_function="sum"
     >>> )
     [
