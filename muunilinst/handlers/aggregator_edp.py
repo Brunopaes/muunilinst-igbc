@@ -1,12 +1,9 @@
 import logging
 
-import flask
+from .app import handler
 from processors import aggregator
 
 logger = logging.Logger("Aggregator", level=logging.INFO)
-
-handler = flask.Flask(__name__)
-
 
 PAYLOAD_ = [
     {
